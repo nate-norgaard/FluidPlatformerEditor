@@ -10,7 +10,7 @@ import DataManifest from 'manifest.js';
 me.device.onReady(function () {
 
     // initialize the display canvas once the device/browser is ready
-    if (!me.video.init(1218, 562, {parent : "screen", scale : "auto"})) {
+    if (!me.video.init(960, 432, {parent : "screen", scale : "auto"})) {
         alert("Your browser does not support HTML5 canvas.");
         return;
     }
