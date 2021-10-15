@@ -16,6 +16,11 @@ var TouchCanvas = me.GUI_Object.extend(
 		this.name = "TouchCanvas"
 		this.anchorPoint._x = 0;
 		this.anchorPoint._y = 0;
+		
+		if (!this.onTileClicked)
+		{
+			this.onTileClicked = () => {};
+		}
 	},
 
 	// output something in the console
@@ -23,13 +28,15 @@ var TouchCanvas = me.GUI_Object.extend(
 	onClick:function (event)
 	{
 		var tileLayer1 = me.game.world.getChildByName("Tile Layer 1")[0];
-		var gameCoords = new me.Vector2d(event.gameX / tileLayer1.tilewidth, event.gameY / tileLayer1.tileheight);
-		console.log(gameCoords.floorSelf());
-		
-		var x = gameCoords.x;
-		var y = gameCoords.y;
+		var tileCoords = new me.Vector2d(event.gameX / tileLayer1.tilewidth, event.gameY / tileLayer1.tileheight);
+		tileCoords.floorSelf();
+		//console.log(tileCoords.floorSelf());
+		this.onTileClicked(tileCoords);
+		/*
+		var x = tileCoords.x;
+		var y = tileCoords.y;
 		var tile = tileLayer1.cellAt(x, y);
-		console.log(tile);
+		//console.log(tile);
 		if (tile == null)
 		{
 			tile = tileLayer1.getTileById(48, x, y);
@@ -37,10 +44,10 @@ var TouchCanvas = me.GUI_Object.extend(
 		}
 		else
 		{
-			//tileLayer1.cellAt(x, y).tileId = 48;
-			tileLayer1.clearTile(gameCoords.x, gameCoords.y);
+			tileLayer1.clearTile(tileCoords.x, tileCoords.y);
 		}
 		// don't propagate the event
+		*/
 		return false;
 	}
 });

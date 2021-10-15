@@ -5,7 +5,13 @@ import TitleScreen from 'js/stage/title.js';
 import PlayScreen from 'js/stage/play.js';
 import PlayerEntity from 'js/renderables/player.js';
 
+import SharedData from 'js/stage/sharedData.js';
+
 import DataManifest from 'manifest.js';
+
+var gameReady = false;
+var fluidReady = false;
+export var sharedData = new SharedData();
 
 me.device.onReady(function () {
 
@@ -21,6 +27,22 @@ me.device.onReady(function () {
     // allow cross-origin for image/texture loading
     me.loader.crossOrigin = "anonymous";
 
+	var onReady = () => {
+		console.log("Ready? " + gameReady + ", " + fluidReady);
+		if (gameReady && fluidReady) {
+			console.log("LET'S GOOOO! Game starting in 1 seconds...");
+			setTimeout(function() {
+				me.state.change(me.state.PLAY);
+			}, 1000);
+		}
+	};
+	
+	//sharedData = new SharedData();
+	sharedData.start(() => {
+		fluidReady = true;
+		onReady();
+	});
+
     // set and load all resources.
     me.loader.preload(DataManifest, function() {
         // set the user defined game stages
@@ -31,6 +53,9 @@ me.device.onReady(function () {
         me.pool.register("mainPlayer", PlayerEntity);
 
         // Start the game.
-        me.state.change(me.state.PLAY);
+        //me.state.change(me.state.PLAY);
+		console.log("gameReady 1");
+		gameReady = true;
+		onReady();
     });
 });
