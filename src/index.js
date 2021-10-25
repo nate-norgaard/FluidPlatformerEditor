@@ -4,6 +4,8 @@ import 'index.css';
 import TitleScreen from 'js/stage/title.js';
 import PlayScreen from 'js/stage/play.js';
 import PlayerEntity from 'js/renderables/player.js';
+import RemotePlayerManager from 'js/stage/RemotePlayerManager.js';
+import RemotePlayerEntity from 'js/renderables/remotePlayer.js';
 
 import SharedData from 'js/stage/sharedData.js';
 
@@ -51,6 +53,15 @@ me.device.onReady(function () {
 
         // add our player entity in the entity pool
         me.pool.register("mainPlayer", PlayerEntity);
+		me.pool.register("remotePlayerManager", RemotePlayerManager);
+		me.pool.register("remotePlayerEntity", RemotePlayerEntity, true);
+		
+		// enable the keyboard
+		me.input.bindKey(me.input.KEY.A, "left");
+		me.input.bindKey(me.input.KEY.D, "right");
+		me.input.bindKey(me.input.KEY.W, "jump", true);
+		me.input.bindKey(me.input.KEY.SPACE, "jump", true);
+		me.input.bindKey(me.input.KEY.Q, "reset", true);
 
         // Start the game.
         //me.state.change(me.state.PLAY);

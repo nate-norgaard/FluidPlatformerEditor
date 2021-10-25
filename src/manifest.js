@@ -27,6 +27,11 @@ const DataManifest = [
 		name:"tiles",
 		type:"image",
 		src: "./data/img/tiles.png"
+	},
+	{
+		name:"characters",
+		type:"image",
+		src: "./data/img/characters_packed.png"
 	}
 ];
 

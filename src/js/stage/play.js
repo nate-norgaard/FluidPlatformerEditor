@@ -24,6 +24,12 @@ export var PlayScreen = me.Stage.extend({
 		console.log(sharedData);
 		var levelEditor = new LevelEditor(this.touchCanvas, sharedData);
 		
+		var remotePlayerManagerSettings = {
+			width: 1,
+			height: 1
+		};
+		var remotePlayerManager = me.pool.pull("remotePlayerManager", 0, 0, remotePlayerManagerSettings);
+		this.remotePlayerManager = remotePlayerManager;
     },
 	
 	onDestroyEvent: function() {

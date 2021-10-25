@@ -1,5 +1,10 @@
 import * as me from 'melonjs/dist/melonjs.module.js';
-import { globalTouchCanvas, globalSharedData} from 'js/stage/levelEditor.js';
+import {
+	globalTouchCanvas,
+	globalSharedData,
+	globalTileBodyRendererMap,
+	globalTileBodyRendererContainer
+	} from 'js/stage/levelEditor.js';
 
 export const TILE_UNKNOWN = -1;
 export const TILE_NONE = 0;
@@ -46,6 +51,7 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 	var xs = new Array (-1, 0, 1, 1, 1, 0, -1, -1);
 	var ys = new Array (-1, -1, -1, 0, 1, 1, 1, 0);
 	
+	// BUG NOTES: SharedMap doesn't get anything without wait, for some reason
 	//var myTileFamily = tileLayerMap.get(tileCoords);
 	var neighborTileFamilies = new Array();
 	var recalcCoords = new Array();
@@ -74,7 +80,8 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 				continue;
 			}
 			
-			// WHY IS THIS BROKEN? var neighborTileFamily = tileLayerMap.get(neighborTileCoords);
+			// WHY IS THIS BROKEN?
+			//var neighborTileFamilyTest = tileLayerMap.get(neighborTileCoords.toString());
 			// BUG NOTES: I ought to be able to get the tileFamily value
 			// from the SharedMap, but my get request is getting undefined.
 			// Could it be that I need to do a wait instead of a get?
@@ -111,7 +118,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 1;
 		}
-		
 		// one neighbor
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
@@ -120,7 +126,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 141;
 		}
-		
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
 			&& neighborTileFamilies[5] != TILE_LAND
@@ -128,7 +133,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 2;
 		}
-		
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
 			&& neighborTileFamilies[5] == TILE_LAND
@@ -136,7 +140,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 21;
 		}
-		
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
 			&& neighborTileFamilies[5] != TILE_LAND
@@ -144,7 +147,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 4;
 		}
-		
 		// oposite ends
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
@@ -153,7 +155,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 3;
 		}
-		
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
 			&& neighborTileFamilies[5] == TILE_LAND
@@ -161,7 +162,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 121;
 		}
-		
 		// corners
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
@@ -170,7 +170,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 22;
 		}
-		
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
 			&& neighborTileFamilies[5] == TILE_LAND
@@ -178,7 +177,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 24;
 		}
-		
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
 			&& neighborTileFamilies[5] != TILE_LAND
@@ -186,7 +184,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 142;
 		}
-		
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
 			&& neighborTileFamilies[5] != TILE_LAND
@@ -194,7 +191,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 144;
 		}
-		
 		// three neighbors
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
@@ -203,7 +199,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 122;
 		}
-		
 		else if (neighborTileFamilies[1] != TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
 			&& neighborTileFamilies[5] == TILE_LAND
@@ -211,7 +206,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 23;
 		}
-		
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] != TILE_LAND
 			&& neighborTileFamilies[5] == TILE_LAND
@@ -219,7 +213,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 124;
 		}
-		
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
 			&& neighborTileFamilies[5] != TILE_LAND
@@ -227,7 +220,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 143;
 		}
-		
 		// four neighbors
 		else if (neighborTileFamilies[1] == TILE_LAND
 			&& neighborTileFamilies[3] == TILE_LAND
@@ -236,7 +228,6 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 		{
 			myTileId = 123;
 		}
-		
 		else
 		{
 			console.log("tile picking error for land");
@@ -248,15 +239,61 @@ export const calculateTile = (tileCoords, tileFamily, ripple) =>
 	{
 		var myTile = tileLayer1.getTileById(myTileId, tileCoords.x, tileCoords.y);
 		tileLayer1.setTile(myTile, tileCoords.x, tileCoords.y);
+		
+		var previousRenderable = globalTileBodyRendererMap.get(tileCoords.toString());
+		if (previousRenderable != null)
+		{
+			globalTileBodyRendererContainer.removeChild(previousRenderable);
+			globalTileBodyRendererContainer.recalc();
+			globalTileBodyRendererMap.delete(tileCoords.toString());
+			//console.log(me.game.world.getChildren());
+		}
+		
+		var tileWidth = 18;
+		var tileHeight = 18;
+		
+		var rect = new me.Rect(0, 0, tileWidth, tileHeight);
+		//console.log(rect);
+		
+		var renderable = new me.Renderable(tileCoords.x * tileWidth, tileCoords.y * tileHeight, tileWidth, tileHeight);
+		
+		var body = new me.Body(renderable, rect);
+		body.collisionType = me.collision.types.WORLD_SHAPE;
+		body.setCollisionMask(me.collision.types.ALL_OBJECT);
+		body.ignoreGravity = true;
+		//console.log(body);
+		
+		renderable.body = body;
+		renderable.recalc();
+		renderable.name = "collision tile rect body";
+		//console.log(renderable);
+		globalTileBodyRendererContainer.addChild(renderable);
+		globalTileBodyRendererContainer.recalc();
+		globalTileBodyRendererMap.set(tileCoords.toString(), renderable);
+		//console.log(me.game.world.getChildren());
+		//console.log(globalTileBodyRendererContainer.getChildren());
 	}
 	else
 	{
-		tileLayer1.clearTile(tileCoords.x, tileCoords.y);
+		var tile = tileLayer1.cellAt(tileCoords.x, tileCoords.y);
+		console.log(tileCoords);
+		console.log(tileLayer1);
+		console.log(tile);
+		if (tileLayer1.cellAt(tileCoords.x, tileCoords.y) != null)
+		{
+			tileLayer1.clearTile(tileCoords.x, tileCoords.y);
+			
+			// BUG: sometimes we are overzealously deleting collision boxes
+			var renderable = globalTileBodyRendererMap.get(tileCoords.toString());
+			globalTileBodyRendererContainer.removeChild(renderable);
+			globalTileBodyRendererContainer.recalc();
+			globalTileBodyRendererMap.delete(tileCoords.toString());
+			//console.log(me.game.world.getChildren());
+			//console.log(globalTileBodyRendererContainer.getChildren());
+		}
 	}
 	
 	recalcCoords.forEach((coords) => {
-		//console.log("recalcTile");
-		//console.log(coords);
 		var neighborTileFamily = tileFamilyFromTileId(tileLayer1.cellAt(coords.x, coords.y).tileId);
 		calculateTile(coords, neighborTileFamily, false);
 	});

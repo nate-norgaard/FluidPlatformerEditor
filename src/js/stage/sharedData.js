@@ -6,7 +6,10 @@ class SharedData {
 	constructor () {
 		this.tinyliciousClient = new TinyliciousClient();
 		this.containerSchema = {
-			initialObjects: { tileLayerMap: SharedMap }
+			initialObjects: {
+				tileLayerMap: SharedMap,
+				playerDataMap: SharedMap
+			}
 		};
 		this.dataContainer = null;
 	}
@@ -48,6 +51,10 @@ class SharedData {
 		//console.log("getTileLayerMap");
 		//console.log(this.dataContainer);
 		return this.dataContainer.initialObjects.tileLayerMap;
+	}
+	
+	getPlayerDataMap () {
+		return this.dataContainer.initialObjects.playerDataMap;
 	}
 };
 

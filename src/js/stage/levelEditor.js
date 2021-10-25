@@ -3,6 +3,8 @@ import * as ct from 'js/stage/calculateTile.js';
 
 export var globalTouchCanvas = null;
 export var globalSharedData = null;
+export var globalTileBodyRendererMap = new Map();
+export var globalTileBodyRendererContainer;
 
 
 class LevelEditor {
@@ -16,6 +18,11 @@ class LevelEditor {
 		this.sharedData = sharedData;
 		globalSharedData = sharedData;
 		this.sharedData.getTileLayerMap().on("valueChanged", this.tileChanged);
+		
+		globalTileBodyRendererContainer = new me.Container();
+		globalTileBodyRendererContainer.name = "collision";
+		me.game.world.addChild(globalTileBodyRendererContainer);
+		console.log(me.game.world.getChildren());
 		
 		var c = 0;
 		// read any existing state
@@ -32,14 +39,16 @@ class LevelEditor {
 			var x = key.x;
 			var y = key.y;
 			var tileLayer1 = me.game.world.getChildByName("Tile Layer 1")[0];
-			if (x != undefined && value != 0)
+			if (x != undefined && value != ct.TILE_NONE)
 			{
 				var tile = tileLayer1.getTileById(value, x, y);
-				tileLayer1.setTile(tile, x, y);
+				//tileLayer1.setTile(tile, x, y);
+				ct.calculateTile(key, value, true);
 			}
-			else if (value == 0 && tileLayer1.cellAt(x,y) != null)
+			else if (x != undefined && value == ct.TILE_NONE && tileLayer1.cellAt(x,y) != null)
 			{
-				tileLayer1.clearTile(x, y);
+				//tileLayer1.clearTile(x, y);
+				ct.calculateTile(key, value, true);
 			}
 		});
 		
@@ -96,7 +105,7 @@ class LevelEditor {
 			{
 				tileLayerMap.delete(tileCoords);
 			}
-			tileLayerMap.set(tileCoords, 0); // set because delete isn't triggering onValueChanged?
+			tileLayerMap.set(tileCoords, ct.TILE_NONE); // set because delete isn't triggering onValueChanged?
 		}
 	}
 	
