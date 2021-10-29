@@ -8,7 +8,8 @@ class SharedData {
 		this.containerSchema = {
 			initialObjects: {
 				tileLayerMap: SharedMap,
-				playerDataMap: SharedMap
+				playerDataMap: SharedMap,
+				playerPresenceMap: SharedMap
 			}
 		};
 		this.dataContainer = null;
@@ -55,6 +56,10 @@ class SharedData {
 	
 	getPlayerDataMap () {
 		return this.dataContainer.initialObjects.playerDataMap;
+	}
+	
+	getPlayerPresenceMap () {
+		return this.dataContainer.initialObjects.playerPresenceMap;
 	}
 };
 

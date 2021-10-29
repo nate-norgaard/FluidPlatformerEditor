@@ -12,6 +12,9 @@ var RemotePlayerEntity = me.Entity.extend({
 	
 	onResetEvent: function(settings)
 	{
+		console.log(this);
+		//BUG: after reusing a pooled object, we don't have a body!
+		
 		this.body.setCollisionMask(me.collision.types.NO_OBJECT);
 		
 		var playerId = settings.playerId;
@@ -19,12 +22,16 @@ var RemotePlayerEntity = me.Entity.extend({
 		
 		var playerDataMap = globalSharedData.getPlayerDataMap();
 
-		this.renderable.addAnimation("default", [skinIndexes[settings.skin] + 1, skinIndexes[settings.skin]]);
-		this.renderable.setCurrentAnimation("default");
+		//this.renderable.addAnimation("default", [skinIndexes[settings.skin] + 1, skinIndexes[settings.skin]]);
+		//this.renderable.setCurrentAnimation("default");
 		this.renderable.animationspeed = 0;
 		this.renderable.setAnimationFrame(settings.animationFrame);
+		this.renderable.addAnimation("walk",  [skinIndexes[settings.skin] + 1, skinIndexes[settings.skin]]);
+		this.renderable.addAnimation("stand",  [skinIndexes[settings.skin]]);
+		this.renderable.addAnimation("jump",  [skinIndexes[settings.skin] + 1]);
+		this.renderable.setCurrentAnimation("stand");
 		//console.log(settings.r);
-		this.renderable.tint.setColor(new me.Color(settings.tintR, settings.tintG, settings.tintB, 1));
+		//this.renderable.tint.setColor(new me.Color(settings.tintR, settings.tintG, settings.tintB, 1));
 		
 		var onSharedValueChanged = (valueChangedArgs) =>
 		{
@@ -32,13 +39,19 @@ var RemotePlayerEntity = me.Entity.extend({
 			if (valueChangedArgs.key == playerId)
 			{
 				var playerData = playerDataMap.get(valueChangedArgs.key);
+				//console.log(playerData);
 				this.pos.x = playerData.x;
 				this.pos.y = playerData.y;
+				if (!this.renderable.isCurrentAnimation(playerData.animation))
+				{
+					this.renderable.setCurrentAnimation(playerData.animation);
+				}
 				this.renderable.setAnimationFrame(playerData.animationFrame);
 				this.renderable.flipX(playerData.flipX);
+				
 				me.game.repaint();
 			}
-		}
+		};
 		
 		playerDataMap.on("valueChanged", onSharedValueChanged);
 		me.game.repaint();

@@ -54,7 +54,7 @@ me.device.onReady(function () {
         // add our player entity in the entity pool
         me.pool.register("mainPlayer", PlayerEntity);
 		me.pool.register("remotePlayerManager", RemotePlayerManager);
-		me.pool.register("remotePlayerEntity", RemotePlayerEntity, true);
+		me.pool.register("remotePlayerEntity", RemotePlayerEntity);
 		
 		// enable the keyboard
 		me.input.bindKey(me.input.KEY.A, "left");

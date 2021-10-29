@@ -24,8 +24,8 @@ var PlayerEntity = me.Entity.extend({
 		this.body.setCollisionType = me.collision.types.PLAYER_OBJECT;
 		this.body.setCollisionMask(me.collision.types.ALL_OBJECT);
 		//this.body.ignoreGravity = true;
-		console.log(this.body);
-		console.log(me.game.world.getChildren());
+		//console.log(this.body);
+		//console.log(me.game.world.getChildren());
 
 		// set the display to follow our position on both axis
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH, 0.4);
@@ -51,7 +51,7 @@ var PlayerEntity = me.Entity.extend({
 		this.playerId = me.Math.random(0, 10000000);
 		globalPlayerId = this.playerId;
 		
-		this.renderable.tint.random(155, 255);
+		//this.renderable.tint.random(155, 255);
 		
 		this.lastUpdateSharedDataTime = me.timer.getTime();
 		this.updateSharedDataTimeInterval = 0;
@@ -60,6 +60,17 @@ var PlayerEntity = me.Entity.extend({
 		
 		this.prevX = this.pos.x;
 		this.prevY = this.pos.y;
+		this.frameUpdateDelay = 0;
+		
+		var updatePresence = () => {
+			//console.log("update presence");
+			var playerPresenceMap = globalSharedData.getPlayerPresenceMap();
+			//console.log(playerPresenceMap);
+			playerPresenceMap.set(this.playerId, Date.now());
+		}
+		
+		setTimeout(updatePresence, 500);
+		this.presenceIntervalId = setInterval(updatePresence, 5000);
     },
 
     /**
@@ -140,6 +151,8 @@ var PlayerEntity = me.Entity.extend({
 		
 		this.prevX = this.pos.x;
 		this.prevY = this.pos.y;
+		this.prevJumping = this.body.jumping;
+		this.prevFalling = this.body.falling;
 
         // return true if we moved or if the renderable was updated
 		return (this._super(me.Entity, 'update', [dt]) || this.body.vel.x !== 0 || this.body.vel.y !== 0);
@@ -169,7 +182,25 @@ var PlayerEntity = me.Entity.extend({
 	
 	updateSharedPlayerData : function()
 	{	
-		if (this.prevX == this.pos.x && this.prevY == this.pos.y)
+		// NOTE: frameUpdateDelay is the number of frames after stopping acting
+		// that this player continues updating itself to fluid.
+		// Needed this because animationw as getting set a frame after stopped acting.
+	
+		if (this.prevX == this.pos.x && this.prevY == this.pos.y
+			&& this.prevFalling == this.body.falling && this.prevJumping == this.body.jumping)
+		{
+			this.frameUpdateDelay--;
+			if (this.frameUpdateDelay < 0)
+			{
+				this.frameUpdateDelay = 0;
+			}
+		}
+		else
+		{
+			this.frameUpdateDelay = 2;
+		}
+		
+		if (this.frameUpdateDelay <= 0)
 		{
 			return;
 		}
@@ -183,8 +214,24 @@ var PlayerEntity = me.Entity.extend({
 				var playerDataMap = globalSharedData.getPlayerDataMap();
 				if (playerDataMap != null)
 				{
+					var animationName = "stand";
+					if (this.renderable.isCurrentAnimation("jump"))
+					{
+						animationName = "jump";
+					}
+					else if (this.renderable.isCurrentAnimation("stand"))
+					{
+						animationName = "stand"
+					}
+					else if (this.renderable.isCurrentAnimation("walk"))
+					{
+						animationName = "walk"
+					}
+					//console.log(animationName);
+					
 					var playerData = {
 						skin: this.skin,
+						animation: animationName,
 						animationFrame: this.renderable.getCurrentAnimationFrame(),
 						x: this.pos.x,
 						y: this.pos.y,
